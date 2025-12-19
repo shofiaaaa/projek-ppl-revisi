@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-4">
+
+    <!-- HEADER -->
+    <div class="text-center mb-4">
+        <h3 class="fw-bold text-primary">📊 Hasil Quiz: {{ quiz.title }}</h3>
+        <p class="text-muted">Laporan hasil quiz & rekap nilai mingguan</p>
+    </div>
+
+    <!-- DAFTAR NILAI SISWA -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-success text-white fw-bold">
+            Daftar Nilai Siswa
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-bordered table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Siswa</th>
+                        <th>Nilai</th>
+                        <th>Tanggal Pengerjaan</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in submissions %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ s.user.username if s.user else 'Unknown' }}</td>
+                        <td>
+                            <span class="badge bg-success px-3 py-2">
+                                {{ "%.2f"|format(s.score) }}
+                            </span>
+                        </td>
+                        <td>{{ s.finished_at.strftime("%d %B %Y") }}</td>
+                        <td>
+                            <a href="{{ url_for('view_submission', submission_id=s.id) }}"
+                               class="btn btn-sm btn-primary">
+                                Lihat
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-3">
+                            Belum ada peserta yang mengerjakan.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <!-- REKAP NILAI MINGGUAN -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-warning fw-bold">
+            📅 Rekap Nilai per Minggu
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-bordered mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Minggu</th>
+                        <th>Rata-rata Nilai</th>
+                        <th>Jumlah Peserta</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for w in weekly %}
+                    <tr>
+                        <td>{{ w.week }}</td>
+                        <td>
+                            <span class="badge bg-info px-3 py-2">
+                                {{ "%.2f"|format(w.avg_score) }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge bg-dark px-3 py-2">
+                                {{ w.count }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="3" class="text-center text-muted py-3">
+                            Belum ada data rekap mingguan.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- BACK -->
+    <div class="text-center mt-3">
+        <a href="{{ url_for('teacher_dashboard') }}" class="btn btn-secondary">
+            ⬅ Kembali ke Dashboard
+        </a>
+    </div>
+
+</div>
+
+{% endblock %}

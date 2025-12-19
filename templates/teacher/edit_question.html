@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4 text-center">✏️ Edit Soal untuk {{ quiz.title }}</h2>
+
+    <form action="{{ url_for('edit_question', question_id=question.id) }}" method="POST" enctype="multipart/form-data">
+        <!-- Soal -->
+        <div class="mb-3">
+            <label class="form-label fw-bold">Pertanyaan</label>
+            <textarea name="question" class="form-control" rows="3" required>{{ question.text }}</textarea>
+        </div>
+
+        <!-- Gambar Pertanyaan -->
+        {% if question.image_filename %}
+            <div class="mb-3">
+                <p>Gambar saat ini:</p>
+                <img src="{{ url_for('uploaded_file', filename=question.image_filename) }}" class="img-thumbnail" width="200">
+            </div>
+        {% endif %}
+        <div class="mb-3">
+            <label class="form-label fw-bold">Ganti Gambar (opsional)</label>
+            <input type="file" name="question_image" class="form-control">
+        </div>
+
+        <hr>
+
+        <!-- Pilihan Jawaban -->
+        <h5 class="mt-3">Pilihan Jawaban</h5>
+
+        {% set options = ['A', 'B', 'C', 'D'] %}
+        {% for opt in options %}
+            {% set i = loop.index0 %}
+            {% set choice = question.choices[i] if question.choices|length > i else None %}
+            <div class="border p-3 rounded mb-3">
+                <label class="fw-bold">Pilihan {{ opt }}</label>
+                <input type="text" name="option_{{ opt|lower }}" value="{{ choice.text if choice else '' }}" class="form-control mb-2" placeholder="Teks pilihan {{ opt }}">
+
+                {% if choice and choice.image_filename %}
+                    <div class="mb-2">
+                        <p>Gambar saat ini:</p>
+                        <img src="{{ url_for('uploaded_file', filename=choice.image_filename) }}" width="120" class="img-thumbnail">
+                    </div>
+                {% endif %}
+                <input type="file" name="image_{{ opt|lower }}" class="form-control">
+            </div>
+        {% endfor %}
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Jawaban Benar</label>
+            <select name="correct_answer" class="form-select">
+                {% for opt in options %}
+                    <option value="{{ opt|lower }}"
+                        {% if question.correct_answer == opt|lower %}selected{% endif %}>
+                        {{ opt }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">💾 Simpan Perubahan</button>
+        <a href="{{ url_for('add_question', quiz_id=quiz.id) }}" class="btn btn-secondary">⬅️ Kembali</a>
+    </form>
+</div>
+{% endblock %}

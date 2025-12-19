@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="card shadow-lg border-0">
+    <div class="card-body p-5">
+      <h2 class="mb-4 text-center text-primary fw-bold">
+        ✏️ Pilih Pertanyaan untuk Kuis
+      </h2>
+      <h4 class="text-center text-secondary mb-4">
+        {{ quiz.title }}
+      </h4>
+
+      {% if questions %}
+      <form method="post">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead class="table-primary">
+              <tr>
+                <th style="width: 60px; text-align:center;">Pilih</th>
+                <th>Pertanyaan</th>
+                <th style="width: 120px; text-align:center;">Gambar</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for q in questions %}
+              <tr>
+                <td class="text-center">
+                  <input type="checkbox" name="question_ids" value="{{ q.id }}" class="form-check-input">
+                </td>
+                <td>{{ q.text }}</td>
+                <td class="text-center">
+                  {% if q.image_filename %}
+                  <img src="{{ url_for('static', filename='uploads/' ~ q.image_filename) }}"
+                       alt="Gambar Pertanyaan"
+                       class="img-thumbnail"
+                       style="max-width: 80px; max-height: 80px;">
+                  {% else %}
+                  <span class="text-muted">Tidak ada</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="text-center mt-4">
+          <button type="submit" class="btn btn-lg btn-primary px-4">
+            ➕ Tambahkan ke Kuis
+          </button>
+          <a href="{{ url_for('teacher_dashboard') }}" class="btn btn-lg btn-outline-secondary ms-2">
+            ❌ Batal
+          </a>
+        </div>
+      </form>
+      {% else %}
+      <div class="alert alert-warning text-center">
+        Tidak ada pertanyaan yang tersedia saat ini.
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

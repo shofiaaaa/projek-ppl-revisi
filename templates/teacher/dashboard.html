@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-4">
+
+  <h2 class="text-success fw-bold mb-4">📋 Dashboard Guru</h2>
+  <div class="card shadow-sm mb-4 border-info">
+    <div class="card-body d-flex justify-content-between align-items-center">
+      <div>
+        <h5 class="fw-bold mb-1">📊 Monitoring Progres Siswa</h5>
+        <p class="text-muted mb-0">
+          Lihat quiz apa saja yang diakses setiap siswa, status, dan nilai mereka.
+        </p>
+      </div>
+      <a href="{{ url_for('teacher_students') }}" class="btn btn-info">
+        Lihat Progres
+      </a>
+    </div>
+  </div>
+
+  <!-- Tombol Aksi Utama -->
+  <div class="d-flex flex-wrap gap-2 mb-4">
+    <a href="{{ url_for('create_material') }}" class="btn btn-success shadow-sm">+ Tambah Materi</a>
+    <a href="{{ url_for('create_quiz') }}" class="btn btn-primary shadow-sm">+ Buat Quiz</a>
+    <a href="{{ url_for('create_category') }}" class="btn btn-outline-secondary shadow-sm">+ Tambah Kategori</a>
+    
+  </div>
+
+  <!-- ====================== -->
+  <!-- 📘 Daftar Materi Guru -->
+  <!-- ====================== -->
+  <div class="card shadow-sm mb-5">
+    <div class="card-header bg-success text-white fw-bold">
+      📘 Daftar Materi Anda
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Judul</th>
+              <th>Kategori</th>
+              <th>Tanggal Dibuat</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if materials %}
+              {% for m in materials %}
+              <tr>
+                <td class="fw-semibold">{{ m.title }}</td>
+                <td>{{ m.category.name if m.category else '-' }}</td>
+                <td>{{ m.created_at.strftime('%d %B %Y') if m.created_at else '-' }}</td>
+                <td>
+                  <a href="{{ url_for('view_material', material_id=m.id) }}" class="btn btn-sm btn-outline-primary">Lihat</a>
+                  <a href="{{ url_for('edit_material', material_id=m.id) }}" class="btn btn-sm btn-outline-warning">Edit</a>
+                  <form action="{{ url_for('delete_material', material_id=m.id) }}"
+                        method="post"
+                        class="d-inline"
+                        onsubmit="return confirm('Yakin ingin menghapus materi ini?')">
+                    <button class="btn btn-sm btn-outline-danger">Hapus</button>
+                  </form>
+                </td>
+              </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="4" class="text-center text-muted py-3">Belum ada materi.</td>
+              </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================== -->
+  <!-- 📚 Daftar Quiz -->
+  <!-- ====================== -->
+  <div class="card shadow-sm">
+    <div class="card-header bg-primary text-white fw-bold">
+      📚 Daftar Quiz Anda
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Judul</th>
+              <th>Kode</th>
+              <th>Kategori</th>
+              <th>Durasi</th>
+              <th>Status</th>
+              <th>Monitoring</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+
+          {% if quizzes %}
+            {% for quiz in quizzes %}
+            <tr>
+              <td class="fw-semibold">{{ quiz.title }}</td>
+
+              <td>
+                <div class="d-flex align-items-center">
+                  <span id="code-{{ quiz.id }}" class="badge bg-success fs-6">{{ quiz.code }}</span>
+                  <button class="btn btn-sm btn-outline-secondary ms-2"
+                          onclick="copyCode('{{ quiz.id }}')">
+                    📋
+                  </button>
+                </div>
+              </td>
+
+              <td>{{ quiz.category.name if quiz.category else '-' }}</td>
+              <td>{{ (quiz.duration // 60) if quiz.duration else '-' }} menit</td>
+
+              <td>
+                {% if quiz.published %}
+                  <span class="badge bg-success">Aktif</span>
+                {% else %}
+                  <a href="{{ url_for('publish_quiz', quiz_id=quiz.id) }}"
+                     class="btn btn-sm btn-outline-success">
+                    Publish
+                  </a>
+                {% endif %}
+              </td>
+
+              <!-- ✅ MONITORING -->
+              <td>
+                <a href="{{ url_for('quiz_progress', quiz_id=quiz.id) }}"
+                   class="btn btn-sm btn-outline-info mb-1">
+                  👀 Progress
+                </a>
+
+                <a href="{{ url_for('quiz_results', quiz_id=quiz.id) }}"
+                   class="btn btn-sm btn-outline-primary mb-1">
+                  📊 Hasil
+                </a>
+
+                <a href="{{ url_for('download_quiz_result', quiz_id=quiz.id) }}"
+                   class="btn btn-sm btn-outline-success">
+                  ⬇ Rekap
+                </a>
+              </td>
+
+              <!-- AKSI -->
+              <td>
+                <a href="{{ url_for('add_question', quiz_id=quiz.id) }}"
+                   class="btn btn-sm btn-success">+ Soal</a>
+
+                <a href="{{ url_for('quiz_select_questions', quiz_id=quiz.id) }}"
+                   class="btn btn-sm btn-outline-primary">🔍 Sortir</a>
+
+                <a href="{{ url_for('edit_quiz', quiz_id=quiz.id) }}"
+                   class="btn btn-sm btn-warning">Edit</a>
+
+                <form action="{{ url_for('delete_quiz', quiz_id=quiz.id) }}"
+                      method="post"
+                      class="d-inline"
+                      onsubmit="return confirm('Yakin ingin menghapus quiz ini?')">
+                  <button class="btn btn-sm btn-danger">Hapus</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="7" class="text-center text-muted py-3">
+                Belum ada quiz.
+              </td>
+            </tr>
+          {% endif %}
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ====================== -->
+<!-- 📋 Script Copy Code -->
+<!-- ====================== -->
+<script>
+function copyCode(id) {
+  const codeEl = document.getElementById("code-" + id);
+  navigator.clipboard.writeText(codeEl.innerText);
+
+  const alertBox = document.createElement("div");
+  alertBox.className = "alert alert-success position-fixed top-0 start-50 translate-middle-x mt-3 shadow";
+  alertBox.style.zIndex = "2000";
+  alertBox.innerText = "Kode quiz berhasil disalin: " + codeEl.innerText;
+  document.body.appendChild(alertBox);
+
+  setTimeout(() => alertBox.remove(), 2000);
+}
+</script>
+
+{% endblock %}

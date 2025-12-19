@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h3 class="text-success fw-bold">Tambah Soal untuk: {{ quiz.title }}</h3>
+  <hr>
+
+  <!-- Form Tambah Soal -->
+  <form method="POST" enctype="multipart/form-data">
+    <!-- Pertanyaan -->
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Pertanyaan</label>
+      <textarea name="question" class="form-control" rows="3" placeholder="Masukkan teks pertanyaan..." required></textarea>
+    </div>
+
+    <!-- Upload Gambar Soal -->
+    <div class="mb-3">
+      <label class="form-label">Gambar Soal (opsional)</label>
+      <input type="file" name="question_image" class="form-control" accept="image/*">
+    </div>
+
+    <hr>
+
+    <!-- Pilihan Jawaban -->
+    <h5 class="fw-bold text-success">Pilihan Jawaban</h5>
+
+    {% for opt in ['A', 'B', 'C', 'D'] %}
+    <div class="card mt-3 p-3 shadow-sm">
+      <div class="d-flex align-items-center justify-content-between">
+        <h6 class="fw-semibold mb-0">Pilihan {{ opt }}</h6>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="correct_answer" id="ans_{{ opt }}" value="{{ opt }}" required>
+          <label class="form-check-label" for="ans_{{ opt }}">Jawaban Benar</label>
+        </div>
+      </div>
+
+      <!-- Teks Jawaban -->
+      <div class="mt-2">
+        <input type="text" name="option_{{ opt|lower }}" class="form-control" placeholder="Masukkan teks pilihan {{ opt }}">
+      </div>
+
+      <!-- Upload Gambar Jawaban -->
+      <div class="mt-2">
+        <input type="file" name="image_{{ opt|lower }}" class="form-control" accept="image/*">
+        <small class="text-muted">Upload gambar untuk pilihan {{ opt }} (opsional)</small>
+      </div>
+    </div>
+    {% endfor %}
+
+    <button type="submit" class="btn btn-success w-100 mt-4">💾 Simpan Soal</button>
+  </form>
+
+  <hr class="my-4">
+
+  <!-- Daftar Soal -->
+  <h5 class="fw-bold">📋 Daftar Soal di Quiz Ini</h5>
+
+  {% if questions %}
+    {% for q in questions %}
+    <div class="card mb-3 shadow-sm">
+      <div class="card-body">
+        <p class="fw-semibold">{{ loop.index }}. {{ q.text }}</p>
+
+        {% if q.image_filename %}
+          <img src="{{ url_for('uploaded_file', filename=q.image_filename) }}"
+               alt="Gambar Soal" class="img-fluid mb-2 rounded" style="max-width: 300px;">
+        {% endif %}
+
+        <ul class="list-unstyled mt-2">
+          {% set letters = ['A', 'B', 'C', 'D'] %}
+          {% for c in q.choices %}
+            <li>
+              <b>{{ letters[loop.index0] }}.</b> {{ c.text }}
+              {% if c.image_filename %}
+                <br>
+                <img src="{{ url_for('uploaded_file', filename=c.image_filename) }}" 
+                     class="img-fluid rounded mt-1" style="max-width: 150px;">
+              {% endif %}
+              {% if c.is_correct %}
+                <span class="badge bg-success ms-2">Benar</span>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+
+        <div class="mt-3 d-flex gap-2">
+          <a href="{{ url_for('edit_question', question_id=q.id) }}" class="btn btn-sm btn-outline-primary">
+            ✏️ Edit
+          </a>
+          <form action="{{ url_for('delete_question', question_id=q.id) }}" method="POST" style="display:inline;">
+            <button type="submit" class="btn btn-sm btn-outline-danger"
+                    onclick="return confirm('Yakin ingin menghapus soal ini?')">
+              🗑️ Hapus
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="alert alert-warning text-center">Belum ada soal di quiz ini.</div>
+  {% endif %}
+</div>
+{% endblock %}

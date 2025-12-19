@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+
+  <h3 class="fw-bold text-success">
+    Progress Quiz: {{ quiz.title }}
+  </h3>
+
+  <table class="table table-bordered mt-3">
+    <thead class="table-success">
+      <tr>
+        <th>Nama Siswa</th>
+        <th>Status</th>
+        <th>Progress</th>
+        <th>Nilai</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in rows %}
+      <tr>
+        <td>{{ r.nama }}</td>
+        <td>{{ r.status }}</td>
+        <td>{{ r.progress }}</td>
+        <td>{{ r.nilai }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <a href="{{ url_for('download_quiz_result', quiz_id=quiz.id) }}"
+     class="btn btn-outline-success">
+    ⬇ Download Rekap Nilai
+  </a>
+
+</div>
+{% endblock %}

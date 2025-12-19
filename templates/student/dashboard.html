@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+  .glass-card {
+  backdrop-filter: blur(6px);
+  transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .glass-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+  }
+
+  .hover-zoom:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+  }
+  .hover-zoom:hover img {
+    transform: scale(1.05);
+  }
+
+  .section-title {
+    border-left: 5px solid #28a745;
+    padding-left: 10px;
+    font-weight: 700;
+  }
+
+  .quiz-title-bg {
+    background: linear-gradient(45deg, #007bff, #00b3ff);
+  }
+
+  .header-banner {
+    background: linear-gradient(120deg, #28a745, #32d27f);
+    padding: 25px;
+    color: white;
+    border-radius: 18px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.15);
+  }
+</style>
+
+
+
+<div class="container py-4">
+
+  <!-- 🌟 Header Banner -->
+  <div class="header-banner mb-4">
+    <h2 class="fw-bold mb-1">Selamat Datang, {{ current_user.username }} 👋</h2>
+    <p class="mb-0">Ayo belajar dan kerjakan quiz terbaik versi kamu hari ini!</p>
+  </div>
+
+
+
+  <!-- 🔍 Input Kode Quiz -->
+  <div class="glass-card card p-3 mb-5">
+    <form method="POST">
+      <label class="fw-semibold mb-2">Masukkan Kode Quiz:</label>
+      <div class="input-group">
+        <input type="text" name="code" class="form-control border-success" placeholder="Contoh: ABC123" required>
+        <button class="btn btn-success">Mulai</button>
+      </div>
+    </form>
+  </div>
+
+
+
+  <!-- 📘 Materi Pembelajaran -->
+<h4 class="section-title text-success">📘 Materi Pembelajaran</h4>
+
+<div class="row mt-3">
+
+  {% if materials %}
+    {% for m in materials %}
+    <div class="col-md-4 mb-4">
+      <div class="card glass-card h-100 shadow-sm border-0 position-relative hover-zoom"
+           style="border-radius: 16px; overflow: hidden;">
+
+        <!-- 🏷 Badge kategori -->
+        <span class="badge bg-primary position-absolute top-0 end-0 m-2 px-2 py-1 shadow-sm"
+              style="border-radius: 6px; font-size: 0.75rem;">
+          {{ m.category.name if m.category else "Umum" }}
+        </span>
+
+        <!-- 📷 Gambar -->
+        {% if m.image_filename %}
+        <img src="{{ url_for('uploaded_file', filename=m.image_filename) }}"
+             class="card-img-top"
+             style="height: 180px; object-fit: cover;">
+        {% else %}
+        <img src="https://via.placeholder.com/400x180?text=No+Image"
+             class="card-img-top">
+        {% endif %}
+
+        <!-- 📝 Konten -->
+        <div class="card-body">
+          <h5 class="fw-bold text-success">{{ m.title }}</h5>
+          <p class="text-muted small" style="min-height: 55px;">
+            {{ m.content[:120] }}...
+          </p>
+
+          <!-- 📅 Tanggal -->
+          <div class="text-end mt-2">
+            <small class="text-secondary">
+              <i class="bi bi-calendar3"></i>
+              {{ m.created_at.strftime('%d %B %Y') }}
+            </small>
+          </div>
+        </div>
+
+        <!-- 📖 Tombol -->
+        <div class="card-footer bg-transparent border-0 pb-3">
+          <a href="{{ url_for('view_material', material_id=m.id) }}" 
+            class="btn btn-outline-success w-100">
+            📖 Baca Materi
+          </a>
+        </div>
+
+      </div>
+    </div>
+    {% endfor %}
+  {% else %}
+    <p class="text-muted">Belum ada materi.</p>
+  {% endif %}
+
+</div>
+
+
+  <!-- 📂 Riwayat Quiz -->
+  <h4 class="section-title text-primary mt-5">📂 Riwayat Quiz Kamu</h4>
+
+  <div class="row mt-3">
+
+    {% if history %}
+      {% for item in history.values() %}
+      <div class="col-md-4 mb-4">
+
+        <div class="card glass-card h-100">
+
+          <div class="quiz-title-bg card-header text-white fw-bold">
+            {{ item.quiz.title }}
+          </div>
+
+          <div class="card-body">
+            <p>
+              <span class="badge bg-info p-2">
+                {{ item.count }}x Percobaan
+              </span>
+            </p>
+
+            <p class="text-muted">
+              Kategori: {{ item.quiz.category.name if item.quiz.category else 'Umum' }}
+            </p>
+          </div>
+
+          <div class="card-footer bg-transparent">
+            <a href="{{ url_for('student_quiz_history', quiz_id=item.quiz.id) }}"
+               class="btn btn-outline-primary w-100">📁 Lihat Riwayat</a>
+          </div>
+
+        </div>
+
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="alert alert-warning">Belum ada riwayat quiz.</div>
+    {% endif %}
+
+  </div>
+
+</div>
+
+<!-- ========================= -->
+<!-- Leaderboard (Global Top 20) -->
+<!-- ========================= -->
+<div class="card mt-4 shadow-sm">
+  <div class="card-header bg-warning">
+    <strong>🏆 Leaderboard (Top 20)</strong>
+  </div>
+  <div class="card-body p-0">
+    {% if leaderboard %}
+      <div class="table-responsive">
+        <table class="table mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>#</th>
+              <th>Nama</th>
+              <th>Quiz</th>
+              <th>Skor (%)</th>
+              <th>Tanggal</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in leaderboard %}
+              <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ row.username }}</td>
+                <td>{{ row.quiz_title }}</td>
+                <td>{{ '%.2f'|format(row.score or 0) }}</td>
+                <td>
+                  {% if row.finished_at %}
+                    {{ row.finished_at.strftime('%d %B %Y %H:%M') }}
+                  {% else %}
+                    -
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="p-3 text-center text-muted">Belum ada hasil tertulis.</div>
+    {% endif %}
+  </div>
+</div>
+
+
+{% endblock %}

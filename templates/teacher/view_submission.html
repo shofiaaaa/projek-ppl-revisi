@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3 class="text-success">Detail Submission - {{ submission.user.username if submission.user else 'Peserta' }}</h3>
+<p>Skor: {{ submission.score }}</p>
+<p>Mulai: {{ submission.started_at }} | Selesai: {{ submission.finished_at }}</p>
+
+<table class="table">
+  <thead><tr><th>No</th><th>Soal</th><th>Jawaban Peserta</th><th>Jawaban Benar</th></tr></thead>
+  <tbody>
+    {% for ans in submission.answers %}
+    <tr>
+      <td>{{ loop.index }}</td>
+      <td>{{ ans.question.text }}</td>
+      <td>
+        {% if ans.selected_choice %}
+          {{ ans.selected_choice.label }}. {{ ans.selected_choice.text }}
+        {% elif ans.essay_filename %}
+          <a href="{{ url_for('uploaded_file', filename=ans.essay_filename) }}">File jawaban</a>
+        {% else %}
+          -
+        {% endif %}
+      </td>
+      <td>
+        {% for c in ans.question.choices %}
+          {% if c.is_correct %}{{ c.label }}. {{ c.text }}{% if not loop.last %}; {% endif %}{% endif %}
+        {% endfor %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<a href="{{ url_for('view_results', quiz_id=submission.quiz_id) }}" class="btn btn-secondary">Kembali</a>
+{% endblock %}

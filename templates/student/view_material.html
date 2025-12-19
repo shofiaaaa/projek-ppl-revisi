@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+  .material-container {
+    background: #ffffff;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    max-width: 900px;
+    margin: auto;
+  }
+
+  .material-title {
+    font-size: 32px;
+    font-weight: 800;
+    color: #2d8659;
+    margin-bottom: 10px;
+  }
+
+  .material-meta {
+    font-size: 15px;
+    color: #6c757d;
+    border-left: 4px solid #28a745;
+    padding-left: 12px;
+    margin-bottom: 25px;
+  }
+
+  .material-content {
+    font-size: 18px;
+    line-height: 1.7;
+    color: #333;
+    margin-bottom: 20px;
+  }
+
+  .material-img {
+    width: 100%;
+    border-radius: 12px;
+    margin-top: 25px;
+    box-shadow: 0px 6px 18px rgba(0,0,0,0.12);
+  }
+
+  .back-btn {
+    margin-top: 20px;
+  }
+</style>
+
+<div class="material-container">
+  <h2 class="material-title">{{ material.title }}</h2>
+
+  <div class="material-meta">
+    <strong>Kategori:</strong> {{ material.category.name if material.category else "Umum" }} <br>
+    <strong>Dibuat:</strong> {{ material.created_at.strftime('%d %B %Y') }}
+  </div>
+
+  <div class="material-content">
+    {{ material.content | safe }}
+  </div>
+
+  {% if material.image_filename %}
+    <img src="{{ url_for('uploaded_file', filename=material.image_filename) }}" 
+         class="material-img">
+  {% endif %}
+
+  <a href="{{ url_for('student_dashboard') }}" 
+     class="btn btn-success back-btn">⬅ Kembali</a>
+
+</div>
+
+{% endblock %}

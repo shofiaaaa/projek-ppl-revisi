@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+
+  <div class="card shadow">
+    <div class="card-body">
+
+      <h4 class="fw-bold text-primary">{{ quiz.title }}</h4>
+
+      <div class="alert alert-info">
+        Soal {{ nomor }} / {{ total }}
+      </div>
+
+      <!-- SOAL -->
+      <p class="fw-bold fs-5">{{ question.text }}</p>
+
+      {% if question.image_filename %}
+        <img src="{{ url_for('uploaded_file', filename=question.image_filename) }}"
+             class="img-fluid mb-3"
+             style="max-height:300px;">
+      {% endif %}
+
+      <!-- PILIHAN -->
+      <form method="POST">
+        {% for c in choices %}
+        <div class="form-check mb-3">
+
+          <input
+            class="form-check-input"
+            type="radio"
+            name="choice"
+            id="choice{{ c.id }}"
+            value="{{ c.id }}"
+            required
+          >
+
+          <label class="form-check-label" for="choice{{ c.id }}">
+            {{ c.text }}
+
+            {% if c.image_filename %}
+              <br>
+              <img src="{{ url_for('uploaded_file', filename=c.image_filename) }}"
+                   class="img-fluid mt-2"
+                   style="max-width:200px;">
+            {% endif %}
+          </label>
+
+        </div>
+        {% endfor %}
+
+        <button type="submit" class="btn btn-primary mt-3">
+          {% if nomor == total %}
+            Selesai
+          {% else %}
+            Selanjutnya →
+          {% endif %}
+        </button>
+      </form>
+
+    </div>
+  </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+  <div class="card shadow-lg border-0 rounded-4">
+    <div class="card-header bg-warning text-dark text-center rounded-top-4">
+      <h3 class="fw-bold mb-0">✏️ Edit Quiz</h3>
+    </div>
+
+    <div class="card-body bg-light p-4">
+      <form method="POST">
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Judul Quiz</label>
+          <input type="text" name="title" class="form-control" value="{{ quiz.title }}" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Deskripsi</label>
+          <textarea name="description" class="form-control" rows="3">{{ quiz.description }}</textarea>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Kode Quiz</label>
+          <input type="text" name="code" class="form-control" value="{{ quiz.code }}" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Kategori</label>
+          <select name="category" class="form-select">
+            {% for cat in categories %}
+            <option value="{{ cat.id }}" {% if quiz.category_id == cat.id %}selected{% endif %}>
+              {{ cat.name }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Durasi Quiz (menit)</label>
+          <input type="number" name="duration" class="form-control" value="{{ (quiz.duration // 60) if quiz.duration else 10 }}" required>
+        </div>
+
+        <button type="submit" class="btn btn-warning w-100 fw-bold">
+          💾 Simpan Perubahan
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="text-center mt-4">
+    <a href="{{ url_for('teacher_dashboard') }}" class="btn btn-outline-secondary">
+      ⬅️ Kembali ke Dashboard
+    </a>
+  </div>
+</div>
+{% endblock %}

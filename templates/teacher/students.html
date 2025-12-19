@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+
+  <h3 class="fw-bold text-success mb-4">👩‍🎓 Daftar Siswa</h3>
+
+  <div class="card shadow mb-3">
+    <table class="table table-hover mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Nama Siswa</th>
+          <th>Email</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in students %}
+        <tr>
+          <td class="fw-semibold">{{ s.username }}</td>
+          <td>{{ s.email }}</td>
+          <td>
+            <a href="{{ url_for('teacher_student_progress', user_id=s.id) }}"
+               class="btn btn-sm btn-outline-primary">
+              👀 Lihat Progres
+            </a>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="3" class="text-center text-muted py-3">
+            Belum ada siswa.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ✅ TOMBOL KEMBALI (SATU SAJA) -->
+  <a href="{{ url_for('teacher_dashboard') }}"
+     class="btn btn-outline-secondary">
+    ⬅️ Kembali ke Dashboard Guru
+  </a>
+
+</div>
+{% endblock %}

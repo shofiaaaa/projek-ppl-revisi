@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+
+  <h4 class="fw-bold text-primary mb-3">
+    Progres Quiz – {{ student.username }}
+  </h4>
+
+  <div class="card shadow mb-3">
+    <table class="table table-hover mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Quiz</th>
+          <th>Status</th>
+          <th>Progress</th>
+          <th>Nilai</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+        <tr>
+          <td>{{ row.quiz.title }}</td>
+          <td>
+            {% if row.status == "Selesai" %}
+              <span class="badge bg-success">Selesai</span>
+            {% elif row.status == "Mengerjakan" %}
+              <span class="badge bg-warning text-dark">Mengerjakan</span>
+            {% else %}
+              <span class="badge bg-secondary">Belum</span>
+            {% endif %}
+          </td>
+          <td>{{ row.progress }}</td>
+          <td class="fw-bold">{{ row.score }}</td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="4" class="text-center text-muted py-3">
+            Belum ada data progres.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ✅ TOMBOL AKSI -->
+  <div class="d-flex justify-content-between align-items-center mt-3">
+    <a href="{{ url_for('teacher_students') }}"
+       class="btn btn-outline-secondary">
+      ⬅️ Kembali
+    </a>
+
+    <a href="{{ url_for('download_student_progress', user_id=student.id) }}"
+       class="btn btn-success">
+      ⬇️ Download Rekap Nilai
+    </a>
+  </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3 class="text-success fw-bold">Tambah Materi</h3>
+<form method="POST" enctype="multipart/form-data">
+  <div class="mb-3">
+    <label>Judul Materi</label>
+    <input type="text" name="title" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label for="category" class="form-label">Kategori</label>
+    <div class="d-flex">
+        <select id="category" name="category" class="form-select me-2">
+            {% for c in categories %}
+                <option value="{{ c.id }}">{{ c.name }}</option>
+            {% endfor %}
+        </select>
+        <a href="{{ url_for('create_category') }}" class="btn btn-outline-success">+</a>
+    </div>
+</div>
+
+  <div class="mb-3">
+    <label>Isi Materi</label>
+    <textarea name="content" rows="5" class="form-control" required></textarea>
+  </div>
+  <div class="mb-3">
+    <label>Upload Gambar (opsional)</label>
+    <input type="file" name="image" accept="image/*" class="form-control">
+  </div>
+  <button class="btn btn-success w-100">Simpan</button>
+</form>
+{% endblock %}

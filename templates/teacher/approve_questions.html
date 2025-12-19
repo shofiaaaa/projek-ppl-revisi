@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Review Soal: {{ quiz.title }}</h2>
+
+<form method="POST" action="{{ url_for('approve_questions', quiz_id=quiz.id) }}">
+  {% for q in questions %}
+  <div class="question">
+    <p><b>{{ loop.index }}.</b> {{ q.question }}</p>
+    <ul>
+      <li>A. {{ q.option_a }}</li>
+      <li>B. {{ q.option_b }}</li>
+      <li>C. {{ q.option_c }}</li>
+      <li>D. {{ q.option_d }}</li>
+    </ul>
+    <p>Jawaban benar: <b>{{ q.correct_answer }}</b></p>
+    <hr>
+  </div>
+  {% endfor %}
+  <button type="submit" class="btn btn-success">Approve dan Publikasikan Quiz</button>
+</form>
+{% endblock %}

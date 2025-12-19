@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h3 class="fw-bold text-primary">📘 Riwayat: {{ quiz.title }}</h3>
+
+{% if submissions %}
+<div class="row mt-3">
+  {% for s in submissions %}
+  <div class="col-md-4 mb-4">
+    <div class="card shadow-sm border-0 h-100">
+
+      <div class="card-body">
+
+        <p class="mb-2 fw-bold">
+          Percobaan ke-{{ loop.index }}
+        </p>
+
+        {% if s.score %}
+          <p>
+            <span class="badge bg-success p-2">{{ "%.0f"|format(s.score) }}%</span>
+          </p>
+        {% else %}
+          <span class="badge bg-secondary">Belum dinilai</span>
+        {% endif %}
+
+        <p class="text-muted">
+          {{ s.finished_at.strftime("%d %B %Y — %H:%M") if s.finished_at else '-' }}
+        </p>
+
+      </div>
+
+      <div class="card-footer bg-light">
+        <a href="{{ url_for('quiz_result', submission_id=s.id) }}"
+          class="btn btn-outline-primary w-100">
+          Lihat Hasil
+        </a>
+      </div>
+
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info">Belum ada riwayat quiz.</div>
+{% endif %}
+
+{% endblock %}
