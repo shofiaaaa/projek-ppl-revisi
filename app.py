@@ -1185,14 +1185,19 @@ def create_app():
 
 
     return app
+# ==============================================
+# APP INSTANCE UNTUK GUNICORN (WAJIB)
+# ==============================================
+app = create_app()
 
 # ==============================================
-# MAIN ENTRY POINT
+# MAIN ENTRY POINT (LOCAL ONLY)
 # ==============================================
 if __name__ == "__main__":
-    app = create_app()
     with app.app_context():
         db.create_all()
     app.run(debug=True)
+
+
 
 
